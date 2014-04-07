@@ -31,6 +31,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 io.set('log level', 1); //reduces logging
 
+
+var TCPPort = 9999;
+var UDPPort = 8888;
+
 // UDP shenanigans : communicating with the android phone
 // see http://nodejs.org/api/dgram.html for more deets
 var UDPserver = dgram.createSocket("udp4");
@@ -46,13 +50,12 @@ UDPserver.on("message", function (msg, rinfo) {
 });
 
 UDPserver.on("listening", function () {
-  var address = server.address();
-  console.log("server listening " +
+  var address = UDPserver.address();
+  console.log("UDP server listening on " +
       address.address + ":" + address.port);
 });
 
-UDPserver.bind(8888);
-// server listening 0.0.0.0:8888
+UDPserver.bind(UDPPort);
 
 
 // TCP shenanigans: sending things to the phone
@@ -63,27 +66,26 @@ var TCPserver = net.createServer(function(socket) { //'connection' listener
   phones[address] = socket;
   io.sockets.emit('phones', Object.keys(phones)); 
 
-  console.log('server connected');
-  console.log('remote address: ' + address);
-  console.log('remote port: ' + socket.remotePort);
+  console.log(address + ' connected');
   console.log('phones list: ')
   for (phone in phones) {
     console.log(phone);
   }
+  socket.on('data', function(data) {
+    console.log('received text from ' + address + ': ' + data.toString());
+  });
   socket.on('end', function() {
-    console.log('server disconnected');
-    console.log('deleting'+address);
+    console.log(address + ' disconnected');
     delete phones[address];
     io.sockets.emit('phones', Object.keys(phones)); 
     console.log('phones list: ')
     for (phone in phones) {
       console.log(phone);
     }
-    // console.log('phones list: ' + phones);
   });
 });
-TCPserver.listen(9999, function() { //'listening' listener
-  console.log('server bound');
+TCPserver.listen(TCPPort, function() { //'listening' listener
+  console.log('TCP server listening on port ' + TCPPort);
 });
 
 
