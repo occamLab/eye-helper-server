@@ -10,12 +10,13 @@ http://nodejs.org/api/dgram.html
 var express = require('express');
 var app = express();
 var user = require('./routes/user');
-var server = require('http').createServer(app);
+var http = require('http');
+var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var path = require('path');
 var dgram = require('dgram');
 var net = require('net');
-
+var fs = require('fs');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -32,30 +33,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 io.set('log level', 1); //reduces logging
 
 
+var file_name = 1;
 var TCPPort = 9999;
-var UDPPort = 8888;
+var VideoPort = 8888;
 
-// UDP shenanigans : communicating with the android phone
-// see http://nodejs.org/api/dgram.html for more deets
-var UDPserver = dgram.createSocket("udp4");
-
-UDPserver.on("error", function (err) {
-  console.log("server error:\n" + err.stack);
-  server.close();
+// Video Server: receiving video from the android phone
+var VideoServer = http.createServer(function (req, res) {
+  var image_path = path.join(__dirname,file_name + '.jpg');
+  req.pipe(fs.createWriteStream(image_path));
+  console.log("writing image to " + image_path);
+  file_name += 1; 
+  console.log("received an image");
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('OK!');
 });
 
-UDPserver.on("message", function (msg, rinfo) {
-  console.log("server got: " + msg + " from " +
-    rinfo.address + ":" + rinfo.port);
-});
-
-UDPserver.on("listening", function () {
-  var address = UDPserver.address();
-  console.log("UDP server listening on " +
-      address.address + ":" + address.port);
-});
-
-UDPserver.bind(UDPPort);
+VideoServer.listen(VideoPort);
 
 
 // TCP shenanigans: sending things to the phone
@@ -85,7 +78,7 @@ var TCPserver = net.createServer(function(socket) { //'connection' listener
   });
 });
 TCPserver.listen(TCPPort, function() { //'listening' listener
-  console.log('TCP server listening on port ' + TCPPort);
+  console.log('Text server listening on port ' + TCPPort);
 });
 
 
