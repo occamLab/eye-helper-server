@@ -46,6 +46,7 @@ var VideoServer = http.createServer(function (req, res) {
   console.log("received an image");
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end('OK!');
+  io.sockets.emit('video_feed', '/images/'+file_name + '.jpg');
 });
 
 VideoServer.listen(VideoPort);

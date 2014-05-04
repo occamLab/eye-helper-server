@@ -6,12 +6,20 @@ function updateUI(phones){
     }
 };
 
+function updateImage(url) {
+    $('#video_feed').attr('src', 'url');
+}
+
 
 var socket = io.connect('eye-helper.com:3000');
-   socket.on('phones', function (phones) {
-   console.log(phones);
-   updateUI(phones);
-  });
+socket.on('phones', function (phones) {
+    console.log(phones);
+    updateUI(phones);
+});
+socket.on('video_feed', function(url) {
+    console.log(url)
+    updateImage(url);
+});
 
 //enter key shenanigans
 $('#phones').keyup(function (e) {
