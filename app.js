@@ -39,7 +39,7 @@ var VideoPort = 8888;
 
 // Video Server: receiving video from the android phone
 var VideoServer = http.createServer(function (req, res) {
-  var image_path = path.join(__dirname,'/public/images'+file_name + '.jpg');
+  var image_path = path.join(__dirname,'/public/images/'+file_name + '.jpg');
   req.pipe(fs.createWriteStream(image_path));
   console.log("writing image to " + image_path);
   file_name = (file_name+1)%5;
