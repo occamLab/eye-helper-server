@@ -7,7 +7,7 @@ function updateUI(phones){
 };
 
 
-var socket = io.connect('http://localhost');
+var socket = io.connect('eye-helper.com:3000');
    socket.on('phones', function (phones) {
    console.log(phones);
    updateUI(phones);

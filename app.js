@@ -85,7 +85,7 @@ TCPserver.listen(TCPPort, function() { //'listening' listener
 
 //socket.io things
 io.sockets.on('connection', function (socket) {
-  
+  console.log("connection");
   socket.on('message', function (data) {
     console.log(data);
     phones[data.address].write(data.text + '\r\n');
