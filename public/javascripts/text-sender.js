@@ -7,7 +7,7 @@ function updateUI(phones){
 };
 
 function updateImage(url) {
-    $('#video_feed').attr('src', 'url');
+    $('#video_feed').attr('src', url);
 }
 
 
