@@ -33,16 +33,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 io.set('log level', 1); //reduces logging
 
 
-var file_name = 1;
+var file_name = 0;
 var TCPPort = 9999;
 var VideoPort = 8888;
 
 // Video Server: receiving video from the android phone
 var VideoServer = http.createServer(function (req, res) {
-  var image_path = path.join(__dirname,file_name + '.jpg');
+  var image_path = path.join(__dirname,'/images/'+file_name + '.jpg');
   req.pipe(fs.createWriteStream(image_path));
   console.log("writing image to " + image_path);
-  file_name += 1; 
+  file_name = (file_name+1)%5;
   console.log("received an image");
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end('OK!');
