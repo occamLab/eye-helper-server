@@ -11,7 +11,7 @@ function updateImage(url) {
 }
 
 
-var socket = io.connect('eye-helper.com:3000');
+var socket = io.connect();
 socket.on('phones', function (phones) {
     console.log(phones);
     updateUI(phones);
