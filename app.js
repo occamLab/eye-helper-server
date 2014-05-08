@@ -38,11 +38,21 @@ var TCPPort = 9999;
 var VideoPort = 8888;
 var public_directory = path.join(__dirname, 'public');
 
+function get_ip(req) {
+  // http://stackoverflow.com/questions/8107856/how-can-i-get-the-users-ip-address-using-node-js
+  var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+  ip = ip.split(", ")[0];
+  return ip;
+}
 
 // Video Server: receiving video from the android phone
 var VideoServer = http.createServer(function (req, res) {
+  var ip = get_ip(req);
   console.log("received an image");
-  var image_local_directory = path.join('/images', req.connection.remoteAddress.split(".").join(""));
+  var image_local_directory = path.join('/images', ip.split(".").join(""));
   var image_directory = path.join(public_directory,image_local_directory);
 
   mkdirp(image_directory, function(err){
@@ -59,7 +69,7 @@ var VideoServer = http.createServer(function (req, res) {
       console.log("writing image to " + image_path);
       file_name = (file_name+1)%30;
       req.on('end', function(){
-        io.sockets.emit('video_feed', {'image':image_local_path, 'phone':req.connection.remoteAddress});
+        io.sockets.emit('video_feed', {'image':image_local_path, 'phone':ip});
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('OK!');
       })
