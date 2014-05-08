@@ -6,11 +6,17 @@ The image processing and web interface for the app that helps blind people shop.
 Installation
 ------------
 
+### Install OpenCV (required dependency)
+
+[http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html](http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html)
+
+### Install our server
+
 	git clone git@github.com:cypressf/eye-helper-server.git
 	cd eye-helper-server
 	npm install
 
-Running
+Run
 -------
 
 	node app.js
