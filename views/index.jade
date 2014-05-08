@@ -2,17 +2,17 @@ extends layout
 
 block content
 
-    h1= title
-    p Welcome to #{title}
-    
-    img#video_feed
+    h1 Eye-helper prototype
+
 
     ul#phones
         for phone,address in phones
-            li= address
-                input(type="text", name="address", id=address)
+            li(id=address)
+                img
+                input(type="text", name="address")
         else
-            li sorry, no phones
+            li#no_phones Nobody is connected at the moment.
+
 
     script(src='/socket.io/socket.io.js')
     script(src='/javascripts/text-sender.js')

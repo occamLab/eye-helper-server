@@ -36,17 +36,35 @@ io.set('log level', 1); //reduces logging
 var file_name = 0;
 var TCPPort = 9999;
 var VideoPort = 8888;
+var public_directory = path.join(__dirname, 'public');
+
 
 // Video Server: receiving video from the android phone
 var VideoServer = http.createServer(function (req, res) {
-  var image_path = path.join(__dirname,'/public/images/'+file_name + '.jpg');
-  req.pipe(fs.createWriteStream(image_path));
-  console.log("writing image to " + image_path);
-  file_name = (file_name+1)%5;
   console.log("received an image");
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('OK!');
-  io.sockets.emit('video_feed', '/images/'+file_name + '.jpg');
+  var image_local_directory = path.join('/images', req.connection.remoteAddress.split(".").join(""));
+  var image_directory = path.join(public_directory,image_local_directory);
+
+  mkdirp(image_directory, function(err){
+    if (err) {
+      console.error(err);
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.end('OK!');
+    }
+    else {
+      var image_name = file_name + ".jpg";
+      var image_local_path = path.join(image_local_directory, image_name);
+      var image_path = path.join(public_directory, image_local_path);
+      req.pipe(fs.createWriteStream(image_path));
+      console.log("writing image to " + image_path);
+      file_name = (file_name+1)%30;
+      req.on('end', function(){
+        io.sockets.emit('video_feed', {'image':image_local_path, 'phone':req.connection.remoteAddress});
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end('OK!');
+      })
+    }
+  });
 });
 
 VideoServer.listen(VideoPort);
