@@ -5,9 +5,8 @@ body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-h1 {
+header {
 	text-align:center;
-	font-size:3em;
 	font-weight:100;
 	background:#444;
 	padding:1em;
@@ -15,6 +14,19 @@ h1 {
 	color:#eee;
 }
 
+h1 {
+	font-size:3em;
+}
+
+header a#apk {
+	background:#eee;
+	color:#444;
+	padding:1em;
+	border-radius:1em;
+	text-decoration:none;
+	margin:.5em;
+	display:inline-block;
+}
 
 a {
   color: #00B7FF;
@@ -50,7 +62,7 @@ a {
 
 #phones li#no_phones {
 	text-align:center;
-	padding:5em;
+	padding:5em 1em;
 	font-size:1.5em;
 	float:none;
 }
