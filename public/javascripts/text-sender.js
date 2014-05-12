@@ -27,9 +27,11 @@ function updateImage(data) {
 }
 
 var socket = io.connect();
+
 socket.on('phones', function (phones) {
     updateUI(phones);
 });
+
 socket.on('video_feed', function(data) {
     updateImage(data);
 });

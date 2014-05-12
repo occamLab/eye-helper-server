@@ -85,20 +85,22 @@ var phones = {}; //address: object
 
 var TCPserver = net.createServer(function(socket) { //'connection' listener
   var address = socket.remoteAddress;
-  phones[address] = socket;
+  var port = socket.remotePort;
+  var addressKey = address + ":" + port;
+  phones[addressKey] = socket;
   io.sockets.emit('phones', Object.keys(phones)); 
 
-  console.log(address + ' connected');
+  console.log(addressKey + ' connected');
   console.log('phones list: ')
   for (phone in phones) {
     console.log(phone);
   }
   socket.on('data', function(data) {
-    console.log('received text from ' + address + ': ' + data.toString());
+    console.log('received text from ' + addressKey + ': ' + data.toString());
   });
   socket.on('end', function() {
-    console.log(address + ' disconnected');
-    delete phones[address];
+    console.log(addressKey + ' disconnected');
+    delete phones[addressKey];
     io.sockets.emit('phones', Object.keys(phones)); 
     console.log('phones list: ')
     for (phone in phones) {
