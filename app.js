@@ -37,6 +37,8 @@ var file_name = 0;
 var TCPPort = 9999;
 var VideoPort = 8888;
 var public_directory = path.join(__dirname, 'public');
+var phones = {};
+var addressMessage = "this is your unique address:";
 
 function get_ip(req) {
   // http://stackoverflow.com/questions/8107856/how-can-i-get-the-users-ip-address-using-node-js
@@ -50,9 +52,8 @@ function get_ip(req) {
 
 // Video Server: receiving video from the android phone
 var VideoServer = http.createServer(function (req, res) {
-  var ip = get_ip(req);
-  console.log("received an image");
-  var image_local_directory = path.join('/images', ip.split(".").join(""));
+  var url = req.url.replace("/", "");
+  var image_local_directory = path.join('/images', url);
   var image_directory = path.join(public_directory,image_local_directory);
 
   mkdirp(image_directory, function(err){
@@ -69,7 +70,7 @@ var VideoServer = http.createServer(function (req, res) {
       console.log("writing image to " + image_path);
       file_name = (file_name+1)%30;
       req.on('end', function(){
-        io.sockets.emit('video_feed', {'image':image_local_path, 'phone':ip});
+        io.sockets.emit('video_feed', {'image':image_local_path, 'phone':url});
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('OK!');
       })
@@ -80,14 +81,13 @@ var VideoServer = http.createServer(function (req, res) {
 VideoServer.listen(VideoPort);
 
 
-// TCP shenanigans: sending things to the phone
-var phones = {}; //address: object
-
+// Text server (TCP Socket)
 var TCPserver = net.createServer(function(socket) { //'connection' listener
   var address = socket.remoteAddress;
   var port = socket.remotePort;
-  var addressKey = address + ":" + port;
+  var addressKey = address.split(".").join("") + "_" + port;
   phones[addressKey] = socket;
+  socket.write(addressMessage+addressKey+'\r\n');
   io.sockets.emit('phones', Object.keys(phones)); 
 
   console.log(addressKey + ' connected');
