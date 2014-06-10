@@ -8,6 +8,7 @@ http://nodejs.org/api/dgram.html
 */
 var mkdirp = require('mkdirp');
 var express = require('express');
+var favicon = require('serve-favicon');
 var app = express();
 var user = require('./routes/user');
 var http = require('http');
